@@ -35,7 +35,7 @@ namespace GptPong2
         private List<Brick> _bricks;
         private const int BRICK_WIDTH = 40;
         private const int BRICK_HEIGHT = 15;
-        private const int BRICK_MARGIN = 10;
+        private const int BRICK_MARGIN = 3;
         private const int NUM_ROWS = 10;
         private const int NUM_COLS = 8;
         private Color _color;
