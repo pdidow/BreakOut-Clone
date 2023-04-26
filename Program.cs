@@ -1,3 +1,3 @@
 ﻿
-using var game = new GptPong2.Game1();
+using var game = new BreakOutGame.Game1();
 game.Run();

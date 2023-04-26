@@ -8,7 +8,7 @@ using System.Drawing;
 using Color = Microsoft.Xna.Framework.Color;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
-namespace GptPong2
+namespace BreakOutGame
 {
     public class Game1 : Game
     {

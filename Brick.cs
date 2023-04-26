@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GptPong2
+namespace BreakOutGame
 {
     internal class Brick
     {
