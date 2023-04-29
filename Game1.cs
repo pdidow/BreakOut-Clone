@@ -1,4 +1,4 @@
-﻿using BreakoutGame;
+﻿using BreakOutGame;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -43,8 +43,9 @@ namespace BreakOutGame
         //Sound Effects
         private SoundEffect hitBrickSound;
         private SoundEffect hitPaddleSound;
-        private int GameLevel;
-        private PowerUp.PowerUpType _PowerUpType;
+        private int GameLevel;  
+        
+       
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -63,6 +64,7 @@ namespace BreakOutGame
             _bricks = new List<Brick>();
             GameLevel = 0;
             CreateBrickField();
+           
             base.Initialize();
         }
 
@@ -173,45 +175,21 @@ namespace BreakOutGame
 
             for (int row = 0; row < NUM_ROWS+GameLevel; row++)
             {
+                // Generate a random color for the brick row
+                Random rand = new Random();
+                _color = new Color(rand.Next(256), rand.Next(256), rand.Next(256));
                 for (int col = 0; col < NUM_COLS+GameLevel; col++)
                 {
                     int x = startX + col * (BRICK_WIDTH + BRICK_MARGIN);
                     int y = startY + row * (BRICK_HEIGHT + BRICK_MARGIN);
                     var brickBounds = new Rectangle(x, y, BRICK_WIDTH, BRICK_HEIGHT);
-                    // Generate a random color for the brick
-                    Random rand = new Random();
-                    _color = new Color(rand.Next(256), rand.Next(256), rand.Next(256));
+                   
                     var brick = new Brick(brickBounds, _color);
                     _bricks.Add(brick);
                 }
             }
         }
-        private PowerUp GetRandomPowerUp(Vector2 position)
-        {
-            Random random = new Random();
-            int randomPowerup= random.Next(8);
-            PowerUp newPowerUp;
-            switch (randomPowerup) 
-            {
-                case 0:newPowerUp=new PowerUp(position, PowerUp.PowerUpType.L_Laser);
-                    break;
-                case 1:newPowerUp=new PowerUp(position, PowerUp.PowerUpType.E_Enlarge);
-                    break;
-                case 2:newPowerUp=new PowerUp(position, PowerUp.PowerUpType.C_Catch);
-                    break;
-                case 3:newPowerUp=new PowerUp(position, PowerUp.PowerUpType.S_Slow);
-                    break;
-                case 4:newPowerUp=new PowerUp(position, PowerUp.PowerUpType.B_BreakoutSide);
-                    break;
-                case 5:newPowerUp=new PowerUp(position, PowerUp.PowerUpType.D_Disruption);
-                    break;
-                case 6:newPowerUp=new PowerUp(position, PowerUp.PowerUpType.P_PlayerExtra);
-                    break;
-                    
-            }
-            return newPowerUp;
-
-        }
+       
 protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
