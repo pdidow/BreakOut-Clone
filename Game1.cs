@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BreakoutGame;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -42,7 +43,8 @@ namespace BreakOutGame
         //Sound Effects
         private SoundEffect hitBrickSound;
         private SoundEffect hitPaddleSound;
-
+        private int GameLevel;
+        private PowerUp.PowerUpType _PowerUpType;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -59,24 +61,8 @@ namespace BreakOutGame
             _ballInPlay = false;
             _playerScore = 0;
             _bricks = new List<Brick>();
-
-            int startX = (WINDOW_WIDTH - (NUM_COLS * (BRICK_WIDTH + BRICK_MARGIN))) / 2;
-            int startY = 50;
-
-            for (int row = 0; row < NUM_ROWS; row++)
-            {
-                for (int col = 0; col < NUM_COLS; col++)
-                {
-                    int x = startX + col * (BRICK_WIDTH + BRICK_MARGIN);
-                    int y = startY + row * (BRICK_HEIGHT + BRICK_MARGIN);
-                    var brickBounds = new Rectangle(x, y, BRICK_WIDTH, BRICK_HEIGHT);
-                    // Generate a random color for the brick
-                    Random rand = new Random();
-                    _color = new Color(rand.Next(256), rand.Next(256), rand.Next(256));
-                    var brick = new Brick(brickBounds, _color);
-                    _bricks.Add(brick);
-                }
-            }
+            GameLevel = 0;
+            CreateBrickField();
             base.Initialize();
         }
 
@@ -129,7 +115,7 @@ namespace BreakOutGame
                     _ballVelocity.Y = -_ballVelocity.Y;
                     _playerScore += 1;
                     hitPaddleSound.Play();
-                   // BALL_SPEED += .1f;
+                   
                 }
                 // Bounce the ball off the top of the screen
                 if (_ballPosition.Y < _ballTexture.Height/2)
@@ -143,18 +129,27 @@ namespace BreakOutGame
                     _ballVelocity = new Vector2(-BALL_SPEED, -BALL_SPEED);
                     _paddlePosition = new Vector2(WINDOW_WIDTH / 2 - 64, WINDOW_HEIGHT - 200);
                 }
-                // Check for collision with bricks
-                var ballBounds = new Rectangle((int)_ballPosition.X - _ballTexture.Height / 2, (int)_ballPosition.Y - _ballTexture.Height / 2, _ballTexture.Height / 2 * 2, _ballTexture.Height / 2 * 2);
-                for (int i = _bricks.Count - 1; i >= 0; i--)
+                if (_bricks.Count > 0)
                 {
-                    var brick = _bricks[i];
-                    if (!brick.Hit && ballBounds.Intersects(brick.Bounds))
+                    // Check for collision with bricks
+                    var ballBounds = new Rectangle((int)_ballPosition.X - _ballTexture.Height / 2, (int)_ballPosition.Y - _ballTexture.Height / 2, _ballTexture.Height / 2 * 2, _ballTexture.Height / 2 * 2);
+                    for (int i = _bricks.Count - 1; i >= 0; i--)
                     {
-                        brick.Hit = true;
-                        _ballVelocity.Y *= -1;
-                        _playerScore++;
-                        hitBrickSound.Play();
+                        var brick = _bricks[i];
+                        if (!brick.Hit && ballBounds.Intersects(brick.Bounds))
+                        {
+                            brick.Hit = true;
+                            _ballVelocity.Y *= -1;
+                            _playerScore++;
+                            hitBrickSound.Play();
+                        }
                     }
+                }
+                else
+                {
+                    GameLevel += 1;
+                    BALL_SPEED += .1f;
+                    CreateBrickField();
                 }
 
                 // Remove hit bricks from list
@@ -171,8 +166,53 @@ namespace BreakOutGame
          
             base.Update(gameTime);
         }
+        private void CreateBrickField()
+        {
+            int startX = (WINDOW_WIDTH - (NUM_COLS * (BRICK_WIDTH + BRICK_MARGIN))) / 2;
+            int startY = 50;
 
-        protected override void Draw(GameTime gameTime)
+            for (int row = 0; row < NUM_ROWS+GameLevel; row++)
+            {
+                for (int col = 0; col < NUM_COLS+GameLevel; col++)
+                {
+                    int x = startX + col * (BRICK_WIDTH + BRICK_MARGIN);
+                    int y = startY + row * (BRICK_HEIGHT + BRICK_MARGIN);
+                    var brickBounds = new Rectangle(x, y, BRICK_WIDTH, BRICK_HEIGHT);
+                    // Generate a random color for the brick
+                    Random rand = new Random();
+                    _color = new Color(rand.Next(256), rand.Next(256), rand.Next(256));
+                    var brick = new Brick(brickBounds, _color);
+                    _bricks.Add(brick);
+                }
+            }
+        }
+        private PowerUp GetRandomPowerUp(Vector2 position)
+        {
+            Random random = new Random();
+            int randomPowerup= random.Next(8);
+            PowerUp newPowerUp;
+            switch (randomPowerup) 
+            {
+                case 0:newPowerUp=new PowerUp(position, PowerUp.PowerUpType.L_Laser);
+                    break;
+                case 1:newPowerUp=new PowerUp(position, PowerUp.PowerUpType.E_Enlarge);
+                    break;
+                case 2:newPowerUp=new PowerUp(position, PowerUp.PowerUpType.C_Catch);
+                    break;
+                case 3:newPowerUp=new PowerUp(position, PowerUp.PowerUpType.S_Slow);
+                    break;
+                case 4:newPowerUp=new PowerUp(position, PowerUp.PowerUpType.B_BreakoutSide);
+                    break;
+                case 5:newPowerUp=new PowerUp(position, PowerUp.PowerUpType.D_Disruption);
+                    break;
+                case 6:newPowerUp=new PowerUp(position, PowerUp.PowerUpType.P_PlayerExtra);
+                    break;
+                    
+            }
+            return newPowerUp;
+
+        }
+protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
